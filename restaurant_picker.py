@@ -1,13 +1,17 @@
 from random import randint
 
-restaurants = ['Blackthorn',
-               'Kings Pizza',
-               'Tropicana',
-               'Instant Karma',
-               'Hackett Hot Wings',
-               'The Mill',
-               'Old Chicago',
-               "Sam's Cellar",
-               ]
+def pick_restaurant():
+    restaurants = ['Blackthorn',
+                   'Kings Pizza',
+                   'Tropicana',
+                   'Instant Karma',
+                   'Hackett Hot Wings',
+                   'The Mill',
+                   'Old Chicago',
+                   "Sam's Cellar",
+                   ]
 
-print(restaurants[randint(0, len(restaurants) - 1)])
+    return restaurants[randint(0, len(restaurants) - 1)]
+
+if __name__ == "__main__":
+    print(pick_restaurant())
