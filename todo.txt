@@ -1,0 +1,5 @@
+TODO:
+[] Add Logging
+[] Store Max ID in a file so that if the server restarts we can start from
+   the latest Max ID
+[] Find a server to run on

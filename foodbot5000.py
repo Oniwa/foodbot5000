@@ -17,10 +17,8 @@ class TwitterBot(object):
         self.auth = tw.OAuthHandler(self.consumer_key, self.consumer_secret)
         self.auth.set_access_token(self.access_token, self.access_token_secret)
         self.api = tw.API(self.auth)
-        print('Authorized')
 
     def run_bot(self):
-        print('running')
         while(True):
             # Get a list of all the tweets where this account is mentioned
             twts = self.api.mentions_timeline(since_id=self.max_id)
@@ -33,10 +31,12 @@ class TwitterBot(object):
                       '@{} where to eat?'.format(my_screen_name),
                       ]
 
+            # Search all new tweets to see if they match the phrase
             for s in twts:
                 for i in phrase:
                     if i == s.text:
-                        print('Found something!')
+                        # If match reply to the tweet and set max_id so we don't
+                        # reply to old tweets
                         tweeters_screen_name = s.user.screen_name
                         self.max_id = s.id
                         try:
@@ -44,9 +44,8 @@ class TwitterBot(object):
                                                    ' {}'.format(tweeters_screen_name,
                                                                 pick_restaurant()),
                                                                 s.id)
-                            print('did something')
                         except tw.error.TweepError as e:
-                            print(e)
+                            pass
             time.sleep(300)
 
 
