@@ -28,6 +28,7 @@ class TwitterBot(object):
         self.max_id = self.json_data['max_tweet_id']
 
     def run_bot(self):
+        self.load_json()
         # while(True):
         # Get a list of all the tweets where this account is mentioned
         twts = self.api.mentions_timeline(since_id=self.max_id)
