@@ -56,7 +56,13 @@ class TwitterBot(object):
                                                             s.id)
                     except tw.error.TweepError as e:
                         pass
-            # time.sleep(300)
+
+        # If any tweets where updated update the JSON file with new max tweet id
+        if self.json_data['max_tweet_id'] != self.max_id:
+            self.json_data['max_tweet_id'] = self.max_id
+            with open('./data/data.json', 'w') as outfile:
+                json.dump(self.json_data, outfile, indent=4)
+        # time.sleep(300)
 
 
 if __name__ == '__main__':
