@@ -1,15 +1,11 @@
 from random import randint
+import json
 
 def pick_restaurant():
-    restaurants = ['Blackthorn',
-                   'Kings Pizza',
-                   'Tropicana',
-                   'Instant Karma',
-                   'Hackett Hot Wings',
-                   'The Mill',
-                   'Old Chicago',
-                   "Sam's Cellar",
-                   ]
+    with open('./data/data.json') as json_file:
+            json_data = json.load(json_file)
+
+    restaurants = json_data['restaurants']
 
     return restaurants[randint(0, len(restaurants) - 1)]
 
