@@ -72,7 +72,7 @@ class TwitterBot(object):
                     try:
                         self.api.update_status('@{} You should eat at'
                                                ' {}'.format(tweeters_screen_name,
-                                                            pick_restaurant()),
+                                                            self.pick_restaurant()),
                                                             s.id)
                     except tw.error.TweepError as e:
                         self.log.exception("Error updating twitter status")
