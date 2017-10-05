@@ -1,9 +1,9 @@
 import tweepy as tw
-import time
 import json
+from random import randint
+import logging
 
 from data.keys import keys
-from restaurant_picker import pick_restaurant
 
 
 class TwitterBot(object):
@@ -14,6 +14,7 @@ class TwitterBot(object):
         self.access_token = access_token
         self.access_token_secret = access_token_secret
         self.max_id = []
+        self.restaurants = []
         self.json_data = []
 
         # Authorize app with twitter
@@ -21,15 +22,34 @@ class TwitterBot(object):
         self.auth.set_access_token(self.access_token, self.access_token_secret)
         self.api = tw.API(self.auth)
 
+        self.log = logging.getLogger('Logbot 5000')
+        self.log.setLevel(logging.INFO)
+        fh = logging.FileHandler('./data/error.log')
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        fh.setFormatter(formatter)
+        self.log.addHandler(fh)
+
     def load_json(self):
         with open('./data/data.json') as json_file:
             self.json_data = json.load(json_file)
 
         self.max_id = self.json_data['max_tweet_id']
+        self.restaurants = self.json_data['restaurants']
+
+    def pick_restaurant(self):
+        return self.restaurants[randint(0, len(self.restaurants) - 1)]
 
     def run_bot(self):
-        self.load_json()
-        # while(True):
+        self.log.info('Program started')
+        try:
+            self.load_json()
+        except FileNotFoundError as e:
+            self.log.exception("JSON file not found.")
+            return
+        except KeyError as e:
+            self.log.exception('JSON key not found in file')
+            return
+
         # Get a list of all the tweets where this account is mentioned
         twts = self.api.mentions_timeline(since_id=self.max_id)
 
@@ -52,17 +72,17 @@ class TwitterBot(object):
                     try:
                         self.api.update_status('@{} You should eat at'
                                                ' {}'.format(tweeters_screen_name,
-                                                            pick_restaurant()),
+                                                            self.pick_restaurant()),
                                                             s.id)
                     except tw.error.TweepError as e:
-                        pass
+                        self.log.exception("Error updating twitter status")
 
         # If any tweets where updated update the JSON file with new max tweet id
         if self.json_data['max_tweet_id'] != self.max_id:
             self.json_data['max_tweet_id'] = self.max_id
             with open('./data/data.json', 'w') as outfile:
                 json.dump(self.json_data, outfile, indent=4)
-        # time.sleep(300)
+        self.log.info('Program finished')
 
 
 if __name__ == '__main__':
