@@ -1,5 +1,4 @@
 import tweepy as tw
-import time
 import json
 from random import randint
 
@@ -34,7 +33,7 @@ class TwitterBot(object):
 
     def run_bot(self):
         self.load_json()
-        # while(True):
+        
         # Get a list of all the tweets where this account is mentioned
         twts = self.api.mentions_timeline(since_id=self.max_id)
 
@@ -67,7 +66,6 @@ class TwitterBot(object):
             self.json_data['max_tweet_id'] = self.max_id
             with open('./data/data.json', 'w') as outfile:
                 json.dump(self.json_data, outfile, indent=4)
-        # time.sleep(300)
 
 
 if __name__ == '__main__':
