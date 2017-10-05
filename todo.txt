@@ -1,3 +1,2 @@
 TODO:
-[] Add Logging
 [] Find a server to run on

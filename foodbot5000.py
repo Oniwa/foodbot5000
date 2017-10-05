@@ -1,6 +1,7 @@
 import tweepy as tw
 import json
 from random import randint
+import logging
 
 from data.keys import keys
 
@@ -21,6 +22,13 @@ class TwitterBot(object):
         self.auth.set_access_token(self.access_token, self.access_token_secret)
         self.api = tw.API(self.auth)
 
+        self.log = logging.getLogger('Logbot 5000')
+        self.log.setLevel(logging.INFO)
+        fh = logging.FileHandler('./data/error.log')
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        fh.setFormatter(formatter)
+        self.log.addHandler(fh)
+
     def load_json(self):
         with open('./data/data.json') as json_file:
             self.json_data = json.load(json_file)
@@ -32,8 +40,16 @@ class TwitterBot(object):
         return self.restaurants[randint(0, len(self.restaurants) - 1)]
 
     def run_bot(self):
-        self.load_json()
-        
+        self.log.info('Program started')
+        try:
+            self.load_json()
+        except FileNotFoundError as e:
+            self.log.exception("JSON file not found.")
+            return
+        except KeyError as e:
+            self.log.exception('JSON key not found in file')
+            return
+
         # Get a list of all the tweets where this account is mentioned
         twts = self.api.mentions_timeline(since_id=self.max_id)
 
@@ -59,13 +75,14 @@ class TwitterBot(object):
                                                             pick_restaurant()),
                                                             s.id)
                     except tw.error.TweepError as e:
-                        pass
+                        self.log.exception("Error updating twitter status")
 
         # If any tweets where updated update the JSON file with new max tweet id
         if self.json_data['max_tweet_id'] != self.max_id:
             self.json_data['max_tweet_id'] = self.max_id
             with open('./data/data.json', 'w') as outfile:
                 json.dump(self.json_data, outfile, indent=4)
+        self.log.info('Program finished')
 
 
 if __name__ == '__main__':
