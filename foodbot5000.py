@@ -1,9 +1,9 @@
 import tweepy as tw
 import time
 import json
+from random import randint
 
 from data.keys import keys
-from restaurant_picker import pick_restaurant
 
 
 class TwitterBot(object):
@@ -14,6 +14,7 @@ class TwitterBot(object):
         self.access_token = access_token
         self.access_token_secret = access_token_secret
         self.max_id = []
+        self.restaurants = []
         self.json_data = []
 
         # Authorize app with twitter
@@ -26,6 +27,10 @@ class TwitterBot(object):
             self.json_data = json.load(json_file)
 
         self.max_id = self.json_data['max_tweet_id']
+        self.restaurants = self.json_data['restaurants']
+
+    def pick_restaurant(self):
+        return self.restaurants[randint(0, len(self.restaurants) - 1)]
 
     def run_bot(self):
         self.load_json()
