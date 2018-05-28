@@ -70,10 +70,14 @@ class TwitterBot(object):
                     tweeters_screen_name = s.user.screen_name
                     self.max_id = s.id
                     try:
+                        restaurant = self.pick_restaurant()
                         self.api.update_status('@{} You should eat at'
                                                ' {}'.format(tweeters_screen_name,
-                                                            self.pick_restaurant()),
+                                                            restaurant),
                                                             s.id)
+                        self.log.info(f'{tweeters_screen_name} sent tweet '
+                                      f'{s.id} and was given restaurant '
+                                      f'{restaurant}')
                     except tw.error.TweepError as e:
                         self.log.exception("Error updating twitter status")
 
@@ -82,6 +86,7 @@ class TwitterBot(object):
             self.json_data['max_tweet_id'] = self.max_id
             with open('./data/data.json', 'w') as outfile:
                 json.dump(self.json_data, outfile, indent=4)
+            self.log.info(f'Max ID is {self.max_id}')
         self.log.info('Program finished')
 
 

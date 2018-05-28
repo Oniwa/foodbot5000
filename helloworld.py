@@ -1,6 +1,6 @@
 import tweepy
 
-from keys import keys
+from data.keys import keys
 
 CONSUMER_KEY = keys['consumer_key']
 CONSUMER_SECRET = keys['consumer_secret']
